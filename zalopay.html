@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>ZaloPay Input Validation</title>
+</head>
+<body>
+    <form>
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required />
+        <br />
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" pattern="[0-9]{6}" required />
+        <br />
+        <label for="otp">OTP:</label>
+        <input type="text" id="otp" name="otp" pattern="[0-9]{6,8}" required />
+        <br />
+        <input type="submit" value="Submit" />
+    </form>
+</body>
+</html>
